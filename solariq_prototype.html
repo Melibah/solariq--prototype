@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SolarIQ — Smart Solar for Nigeria</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Fraunces:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+:root{
+  --sun:#E07B00;--sun2:#F59E0B;--sun3:#FCD34D;--sun-pale:#FFFBEB;
+  --teal:#0B7A75;--teal-lt:#CCFBF1;
+  --navy:#0C1A2E;--navy2:#1A2F4A;
+  --slate:#64748B;--border:#E2E8F0;--bg:#F8FAFC;--white:#fff;
+  --green:#15803D;--green-lt:#DCFCE7;
+  --red:#DC2626;--red-lt:#FEE2E2;
+  --orange:#EA580C;--orange-lt:#FFF7ED;
+  --purple:#7C3AED;--purple-lt:#F3E8FF;
+  --r:12px;--rs:8px;--rl:20px;
+  --sh:0 1px 4px rgba(0,0,0,.08);--shm:0 6px 24px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#1C0A00;color:var(--navy);min-height:100vh}
+h1,h2,.serif{font-family:'Fraunces',serif}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--white);position:relative;overflow:hidden}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+.prog{height:3px;background:var(--border)}
+.pf{height:100%;background:linear-gradient(90deg,var(--sun),var(--sun2));transition:width .5s ease}
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:.875rem 1.25rem .75rem;border-bottom:1px solid var(--border)}
+.logo{font-family:'Fraunces',serif;font-size:20px;font-weight:900;color:var(--navy)}
+.logo span{color:var(--sun)}
+.scroll{flex:1;overflow-y:auto;padding:1.25rem}
+.acts{padding:1rem 1.25rem 1.5rem;border-top:1px solid var(--border);background:var(--white)}
+.stitle{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.ssub{font-size:14px;color:var(--slate);margin-bottom:1.25rem;line-height:1.6}
+.slbl{font-size:11px;font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;margin-top:1.25rem;display:flex;align-items:center;gap:6px}
+.slbl:first-child{margin-top:0}
+.btn-row{display:flex;gap:10px}
+.btn-p{flex:1;padding:13px;background:var(--sun);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-p:hover{background:var(--sun2);transform:translateY(-1px)}
+.btn-s{padding:13px 18px;background:var(--white);color:var(--navy);border:1.5px solid var(--border);border-radius:var(--rs);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer}
+.btn-s:hover{background:var(--bg)}
+.err{background:var(--red-lt);border:1px solid #FECACA;border-radius:var(--rs);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+select.styled{width:100%;padding:11px 12px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--navy);background:var(--white);outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;cursor:pointer;margin-bottom:1rem}
+select.styled:focus{border-color:var(--sun)}
+
+/* ══ VOICE BUTTON ══════════════════════════════════════════════════════ */
+.vbtn{position:fixed;bottom:90px;right:16px;width:50px;height:50px;border-radius:50%;background:var(--navy2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.3);z-index:999;transition:all .2s}
+.vbtn:hover{background:var(--sun);transform:scale(1.08)}
+.vbtn.listening{background:var(--red);animation:pulse-mic 1.2s ease-in-out infinite}
+.vbtn.speaking{background:var(--teal);animation:pulse-speak 1.5s ease-in-out infinite}
+.vbtn i{color:#fff;font-size:20px}
+@keyframes pulse-mic{0%,100%{box-shadow:0 4px 20px rgba(220,38,38,.3),0 0 0 0 rgba(220,38,38,.4)}50%{box-shadow:0 4px 20px rgba(220,38,38,.5),0 0 0 14px rgba(220,38,38,0)}}
+@keyframes pulse-speak{0%,100%{box-shadow:0 4px 20px rgba(11,122,117,.3),0 0 0 0 rgba(11,122,117,.4)}50%{box-shadow:0 4px 20px rgba(11,122,117,.5),0 0 0 14px rgba(11,122,117,0)}}
+.va-panel{position:fixed;bottom:150px;right:12px;width:260px;background:var(--navy);border-radius:var(--r);padding:14px;z-index:998;box-shadow:0 8px 32px rgba(0,0,0,.3);display:none;border:1px solid rgba(255,255,255,.08)}
+.va-panel.show{display:block}
+.va-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.va-title{font-size:12px;font-weight:600;color:rgba(255,255,255,.7)}
+.va-close{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:18px;padding:0;line-height:1}
+.va-transcript{font-size:13px;color:rgba(255,255,255,.85);min-height:36px;line-height:1.5;margin-bottom:10px;font-style:italic}
+.va-response{font-size:12px;color:rgba(252,211,77,.8);line-height:1.5;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);display:none}
+.va-response.show{display:block}
+.va-hint{font-size:10px;color:rgba(255,255,255,.3);margin-top:8px;line-height:1.4}
+.va-status{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.va-dot{width:8px;height:8px;border-radius:50%;background:var(--slate)}
+.va-dot.red{background:var(--red);animation:blink .8s infinite}
+.va-dot.teal{background:var(--teal)}
+.va-dot.green{background:var(--green)}
+.va-status-text{font-size:11px;color:rgba(255,255,255,.4)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.va-mic-btn{width:100%;padding:8px;background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);border-radius:var(--rs);color:#FCA5A5;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.va-mic-btn:hover{background:rgba(220,38,38,.25)}
+.va-mic-btn.recording{background:rgba(220,38,38,.3);border-color:var(--red);color:var(--red)}
+
+/* ══ OVERLOAD WARNING ════════════════════════════════════════════════════ */
+.overload-banner{background:linear-gradient(135deg,#FFF3CD,#FFF9E6);border:2px solid #F59E0B;border-radius:var(--r);padding:14px;margin-bottom:1rem}
+.ob-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ob-icon{font-size:20px}
+.ob-title{font-size:14px;font-weight:700;color:#92400E}
+.ob-desc{font-size:13px;color:#78350F;line-height:1.6;margin-bottom:10px}
+.ob-limit{background:#fff;border:1px solid #FDE68A;border-radius:var(--rs);padding:10px 12px;margin-bottom:8px}
+.ob-limit-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:3px 0}
+.ob-limit-label{color:var(--slate)}
+.ob-limit-val{font-weight:700}
+.ob-limit-val.ok{color:var(--green)}
+.ob-limit-val.warn{color:var(--orange)}
+.ob-limit-val.over{color:var(--red)}
+.ob-progress{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:6px 0}
+.ob-progress-fill{height:100%;border-radius:3px;transition:width .4s ease}
+.ob-prog-ok{background:var(--green)}
+.ob-prog-warn{background:var(--orange)}
+.ob-prog-over{background:var(--red)}
+.ob-safe-list{font-size:12px;color:var(--green);margin-bottom:4px;font-weight:500}
+.ob-unsafe-list{font-size:12px;color:var(--red);margin-bottom:8px;font-weight:500}
+.ob-items{font-size:11px;color:var(--slate);padding-left:14px;line-height:1.8}
+.headroom-card{background:var(--green-lt);border:1px solid #86EFAC;border-radius:var(--rs);padding:10px 12px;margin-top:8px}
+.hc-title{font-size:12px;font-weight:600;color:var(--green);margin-bottom:4px}
+.hc-val{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--green)}
+.hc-desc{font-size:11px;color:var(--slate);margin-top:3px;line-height:1.4}
+.danger-card{background:var(--red-lt);border:1.5px solid #FECACA;border-radius:var(--r);padding:14px;margin-bottom:1rem}
+.dc-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.dc-title{font-size:14px;font-weight:700;color:var(--red)}
+.dc-desc{font-size:13px;color:#7F1D1D;line-height:1.6;margin-bottom:8px}
+.dc-items{font-size:12px;color:var(--red);line-height:1.8;padding-left:14px}
+
+/* ══ LANDING ══════════════════════════════════════════════════════════════ */
+#s0{background:#1C0A00;position:relative;overflow:hidden}
+#s0 .scroll{padding:0;overflow:hidden}
+#s0 .acts{background:transparent;border:none;padding:1.5rem 1.25rem 2rem}
+.orbs{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(70px);animation:drift var(--d,12s) ease-in-out infinite alternate}
+.o1{width:320px;height:320px;background:radial-gradient(circle,rgba(224,123,0,.55),transparent 65%);top:-80px;right:-60px;--d:14s}
+.o2{width:260px;height:260px;background:radial-gradient(circle,rgba(245,158,11,.35),transparent 65%);top:40%;left:-60px;--d:10s;animation-delay:-3s}
+.o3{width:200px;height:200px;background:radial-gradient(circle,rgba(252,211,77,.2),transparent 65%);bottom:10%;right:10%;--d:16s;animation-delay:-7s}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(25px,35px) scale(1.12)}}
+.slines{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.sline{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(252,211,77,.1),transparent);animation:sweep var(--d,8s) ease-in-out infinite;top:var(--t,30%);width:100%}
+@keyframes sweep{0%,100%{opacity:0;transform:translateX(-100%)}50%{opacity:1;transform:translateX(0)}}
+.land-top{padding:1.25rem 1.25rem .5rem;position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center}
+.land-logo{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:#fff}
+.land-logo span{color:var(--sun3)}
+.land-beta{font-size:11px;color:rgba(255,200,50,.4);background:rgba(252,211,77,.08);border:1px solid rgba(252,211,77,.15);border-radius:10px;padding:3px 8px}
+.sun-wrap{position:relative;display:flex;justify-content:center;padding:1.75rem 0 1.25rem;z-index:1}
+.sun-core{width:88px;height:88px;border-radius:50%;background:radial-gradient(circle,#FCD34D,#F59E0B 50%,#E07B00);box-shadow:0 0 60px rgba(252,211,77,.6),0 0 120px rgba(224,123,0,.3);animation:psun 3s ease-in-out infinite;position:relative;z-index:2;display:flex;align-items:center;justify-content:center}
+.sun-core i{font-size:34px;color:rgba(28,10,0,.7)}
+@keyframes psun{0%,100%{box-shadow:0 0 60px rgba(252,211,77,.6),0 0 120px rgba(224,123,0,.3);transform:scale(1)}50%{box-shadow:0 0 80px rgba(252,211,77,.8),0 0 160px rgba(224,123,0,.4);transform:scale(1.04)}}
+.sring{position:absolute;border-radius:50%;border:1px solid rgba(252,211,77,.2);top:50%;left:50%;transform:translate(-50%,-50%);animation:rexp var(--d,3s) ease-out infinite var(--dl,0s)}
+@keyframes rexp{0%{width:88px;height:88px;opacity:.7}100%{width:220px;height:220px;opacity:0}}
+.hero{position:relative;z-index:1;padding:0 1.25rem 1.25rem;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(252,211,77,.1);border:1px solid rgba(252,211,77,.2);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:600;color:rgba(252,211,77,.8);margin-bottom:1rem;animation:fu .7s ease both .2s}
+.hero-title{font-family:'Fraunces',serif;font-size:36px;font-weight:900;color:#fff;line-height:1.07;margin-bottom:1rem;animation:fu .7s ease both .35s}
+.hero-title .gold{background:linear-gradient(135deg,#FCD34D,#F59E0B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:14px;color:rgba(255,220,150,.5);line-height:1.75;max-width:300px;margin:0 auto 1.5rem;animation:fu .7s ease both .5s}
+@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.stat-band{display:flex;gap:1px;background:rgba(252,211,77,.07);border:1px solid rgba(252,211,77,.1);border-radius:var(--r);overflow:hidden;margin:0 1.25rem 1.25rem;position:relative;z-index:1;animation:fu .7s ease both .65s}
+.lstat{flex:1;padding:12px 6px;text-align:center}
+.lstat+.lstat{border-left:1px solid rgba(252,211,77,.08)}
+.lsval{font-family:'Fraunces',serif;font-size:19px;font-weight:700;color:var(--sun3)}
+.lslbl{font-size:9px;color:rgba(255,220,150,.35);margin-top:3px;line-height:1.4}
+.feat-wrap{padding:0 1.25rem 1.25rem;position:relative;z-index:1;animation:fu .7s ease both .8s}
+.feat-lbl{font-size:11px;font-weight:600;color:rgba(255,220,150,.25);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;text-align:center}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fcard{background:rgba(255,255,255,.04);border:1px solid rgba(255,220,150,.08);border-radius:var(--r);padding:14px;transition:all .2s}
+.fcard:hover{background:rgba(255,255,255,.07);border-color:rgba(252,211,77,.2);transform:translateY(-2px)}
+.fcard-icon{width:32px;height:32px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:16px}
+.fi-a{background:rgba(224,123,0,.25);color:var(--sun3)}.fi-b{background:rgba(11,122,117,.25);color:#34D399}
+.fi-c{background:rgba(124,58,237,.25);color:#A78BFA}.fi-d{background:rgba(21,128,61,.25);color:#4ADE80}
+.fcard-name{font-size:12px;font-weight:600;color:#fff;margin-bottom:3px}
+.fcard-desc{font-size:11px;color:rgba(255,220,150,.35);line-height:1.5}
+.cta-main{width:100%;padding:17px;background:linear-gradient(135deg,#E07B00,#F59E0B);color:#fff;border:none;border-radius:var(--r);font-size:16px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 32px rgba(224,123,0,.5),inset 0 1px 0 rgba(255,255,255,.15);transition:all .2s;animation:fu .7s ease both .95s}
+.cta-main:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(224,123,0,.6)}
+.cta-note{text-align:center;margin-top:10px;font-size:12px;color:rgba(255,220,150,.3);animation:fu .7s ease both 1.05s}
+.cta-note b{color:rgba(252,211,77,.6)}
+
+/* ══ PROFILE ══════════════════════════════════════════════════════════════ */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
+.pcard{border:1.5px solid var(--border);border-radius:var(--r);padding:1rem;cursor:pointer;transition:all .15s;background:var(--white);position:relative;overflow:hidden}
+.pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:transparent;transition:background .15s}
+.pcard:hover{border-color:var(--sun);box-shadow:var(--shm)}
+.pcard.sel{border:2px solid var(--sun);background:var(--sun-pale)}
+.pcard.sel::before{background:linear-gradient(90deg,var(--sun),var(--sun2))}
+.picon{width:36px;height:36px;border-radius:var(--rs);background:var(--sun-pale);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.picon i{color:var(--sun);font-size:18px}
+.pcard.sel .picon{background:var(--sun)}.pcard.sel .picon i{color:#fff}
+.ptitle{font-size:14px;font-weight:600;color:var(--navy)}
+.psub{font-size:11px;color:var(--slate);margin-top:3px;line-height:1.4}
+
+/* ══ APPLIANCE BUILDER ════════════════════════════════════════════════════ */
+.snap-bar{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--r);padding:12px 14px;margin-bottom:1.25rem}
+.snap-icon-btn{width:40px;height:40px;border-radius:50%;background:rgba(252,211,77,.15);border:1.5px solid rgba(252,211,77,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .15s}
+.snap-icon-btn:hover{background:rgba(252,211,77,.25)}
+.snap-icon-btn i{color:var(--sun3);font-size:19px}
+.snap-text{flex:1}.snap-t{font-size:13px;font-weight:600;color:#fff}
+.snap-s{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px}
+.snap-cta{padding:8px 14px;background:var(--sun);color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;flex-shrink:0}
+input#snap-inp{display:none}
+.snap-res{display:none;background:var(--green-lt);border:1px solid #86EFAC;border-radius:var(--rs);padding:10px 14px;margin-bottom:10px}
+.snap-res.show{display:block}
+.snap-rt{font-size:13px;font-weight:600;color:var(--green)}
+.snap-rs{font-size:12px;color:var(--slate);margin-top:2px}
+.cat-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:1rem;scrollbar-width:none}
+.cat-tabs::-webkit-scrollbar{display:none}
+.ctab{padding:6px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-size:12px;font-weight:500;color:var(--slate);cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.ctab:hover{border-color:var(--sun);color:var(--sun)}
+.ctab.on{background:var(--sun);border-color:var(--sun);color:#fff}
+.app-list{display:flex;flex-direction:column;gap:7px;margin-bottom:.75rem}
+.arow{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--white);cursor:pointer;transition:all .15s}
+.arow:hover{border-color:var(--sun);background:var(--sun-pale)}
+.arow.added{border-color:var(--green);background:var(--green-lt)}
+.arow-icon{font-size:20px;width:32px;text-align:center;flex-shrink:0}
+.arow-info{flex:1}.arow-name{font-size:13px;font-weight:500;color:var(--navy)}
+.arow-w{font-size:11px;color:var(--slate);margin-top:1px}
+.arow-add{width:28px;height:28px;border-radius:50%;background:var(--sun);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.arow.added .arow-add{background:var(--green)}
+.custom-bar{border:1.5px dashed var(--border);border-radius:var(--rs);background:none;padding:11px;width:100%;font-size:13px;color:var(--slate);cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px;transition:all .15s}
+.custom-bar:hover{border-color:var(--sun);color:var(--sun)}
+.cform{background:var(--bg);border:1.5px solid var(--sun);border-radius:var(--r);padding:14px;margin-top:8px;display:none}
+.cform.open{display:block}
+.cflbl{font-size:11px;color:var(--slate);margin-bottom:4px;font-weight:500}
+.cfinp{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--navy);background:var(--white);outline:none;margin-bottom:8px}
+.cfinp:focus{border-color:var(--sun)}
+.cfgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.sel-panel{background:var(--bg);border-radius:var(--r);padding:14px;margin-top:1rem;border:1px solid var(--border)}
+.sel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sel-title{font-size:13px;font-weight:600;color:var(--navy)}
+.sel-badge{background:var(--sun);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px}
+.sel-empty{font-size:13px;color:var(--slate);text-align:center;padding:1rem 0;line-height:1.6}
+.sel-item{background:var(--white);border:1px solid var(--border);border-radius:var(--rs);padding:12px;margin-bottom:8px}
+.sel-item:last-child{margin-bottom:0}
+.sel-item-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.sel-item-icon{font-size:18px}
+.sel-item-name{flex:1;font-size:13px;font-weight:600;color:var(--navy)}
+.sel-item-total{font-size:11px;font-weight:600;color:var(--sun);white-space:nowrap}
+.remove-btn{width:24px;height:24px;border-radius:50%;background:none;border:none;color:var(--slate);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.remove-btn:hover{color:var(--red);background:var(--red-lt)}
+.ctrl-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:8px}
+.ctrl-grp{display:flex;flex-direction:column;gap:4px;flex:1}
+.ctrl-lbl{font-size:10px;font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.05em}
+.stepper{display:flex;align-items:center;gap:6px}
+.stbtn{width:28px;height:28px;border-radius:50%;background:var(--white);border:1.5px solid var(--border);color:var(--navy);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;transition:all .15s;flex-shrink:0}
+.stbtn:hover{border-color:var(--sun);color:var(--sun)}
+.stval{font-size:14px;font-weight:700;color:var(--navy);min-width:28px;text-align:center}
+.presets{display:flex;gap:4px;flex-wrap:wrap}
+.preset{padding:3px 8px;border-radius:8px;background:var(--white);border:1px solid var(--border);font-size:10px;font-weight:600;color:var(--slate);cursor:pointer;transition:all .15s}
+.preset:hover,.preset.on{background:var(--sun);border-color:var(--sun);color:#fff}
+.wh-badge{background:var(--sun-pale);border:1px solid rgba(224,123,0,.2);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--sun);display:inline-block;margin-top:8px}
+
+/* ══ FUEL ═════════════════════════════════════════════════════════════════ */
+.fuel-card{background:var(--navy);border-radius:var(--rl);padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden}
+.fuel-card::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(220,38,38,.2),transparent 70%)}
+.fq{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:6px}
+.famt{font-family:'Fraunces',serif;font-size:36px;font-weight:700;color:#FCA5A5;margin-bottom:1rem}
+input.fsl{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.15);border-radius:2px;outline:none}
+input.fsl::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#FCA5A5;cursor:pointer}
+.fticks{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.25);margin-top:6px}
+.fperiods{display:flex;gap:8px;margin-top:12px}
+.fpbtn{flex:1;padding:8px;border-radius:var(--rs);border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.45);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.fpbtn.on{background:rgba(220,38,38,.2);border-color:#FCA5A5;color:#FCA5A5}
+.fannual{margin-top:12px;font-size:12px;color:rgba(255,255,255,.4);background:rgba(255,255,255,.05);border-radius:8px;padding:10px 12px}
+.fannual strong{color:#FCA5A5;font-size:15px;display:block;margin-top:2px}
+
+/* ══ BUDGET + HARDWARE ════════════════════════════════════════════════════ */
+.bcard{background:var(--navy);border-radius:var(--rl);padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden}
+.bcard::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(224,123,0,.2),transparent 70%)}
+.blbl{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:6px}
+.bamount{font-family:'Fraunces',serif;font-size:36px;font-weight:700;color:var(--sun3);margin-bottom:1rem}
+input.bsl{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.15);border-radius:2px;outline:none}
+input.bsl::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--sun3);cursor:pointer}
+.bticks{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.25);margin-top:6px}
+.bhint{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:var(--rs);padding:10px 12px;margin-top:10px;font-size:12px;color:rgba(255,255,255,.55);display:flex;align-items:center;gap:8px}
+.bhint i{color:var(--sun3);flex-shrink:0}
+.bprev{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.bpi{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:8px;text-align:center}
+.bpi.on{background:rgba(224,123,0,.15);border-color:rgba(224,123,0,.4)}
+.bptier{font-size:10px;font-weight:600;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.04em}
+.bprange{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px}
+.bpi.on .bptier{color:var(--sun3)}.bpi.on .bprange{color:#fff}
+
+/* ══ RESULTS — TABBED ════════════════════════════════════════════════════ */
+.tbadge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:.75rem}
+.t1{background:#DCFCE7;color:#15803D}.t2{background:#DBEAFE;color:#1D4ED8}
+.t3{background:#FEF3C7;color:#B45309}.t4{background:#FEE2E2;color:#DC2626}
+.bmatch{border-radius:var(--rs);padding:12px 14px;margin-bottom:1rem;display:flex;align-items:flex-start;gap:10px}
+.bmg{background:var(--green-lt);border:1.5px solid #86EFAC}
+.bma{background:var(--sun-pale);border:1.5px solid var(--sun3)}
+.bmicon{font-size:18px;flex-shrink:0}
+.bmtitle{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:2px}
+.bmdesc{font-size:12px;color:var(--slate);line-height:1.5}
+.res-tabs{display:flex;background:var(--bg);border-radius:var(--r);padding:4px;margin-bottom:1.25rem;gap:4px}
+.rtab{flex:1;padding:9px 4px;border-radius:var(--rs);border:none;background:transparent;font-size:12px;font-weight:500;color:var(--slate);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;text-align:center}
+.rtab.on{background:var(--white);color:var(--navy);font-weight:600;box-shadow:var(--sh)}
+.tab-pane{display:none}.tab-pane.on{display:block}
+.stat4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem}
+.scard{background:var(--bg);border-radius:var(--rs);padding:12px;border:1px solid var(--border)}
+.slb{font-size:11px;color:var(--slate);margin-bottom:3px}
+.sv{font-family:'Fraunces',serif;font-size:17px;font-weight:700;color:var(--navy);line-height:1.2}
+.sv.sun{color:var(--sun)}.sv.tl{color:var(--teal)}
+.hw-sum{background:var(--navy);border-radius:var(--r);padding:14px;margin-bottom:1rem}
+.hw-sum-title{font-size:11px;font-weight:600;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.hw-sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.hw-sum-row:last-child{border-bottom:none}
+.hw-sum-lbl{font-size:12px;color:rgba(255,255,255,.45);flex-shrink:0}
+.hw-sum-val{text-align:right}
+.hw-sum-name{font-size:12px;font-weight:600;color:#fff}
+.hw-sum-why{font-size:10px;color:rgba(255,255,255,.3);margin-top:1px}
+.bomsec{margin-bottom:10px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.bomh{padding:9px 14px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.bomhl{font-size:11px;font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.05em}
+.bomha{font-size:12px;font-weight:600;color:var(--navy)}
+.bomr{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 14px;border-bottom:1px solid var(--bg);font-size:13px}
+.bomr:last-child{border-bottom:none}
+.bomi{color:var(--navy);font-weight:500}.boms{font-size:11px;color:var(--slate);margin-top:2px}
+.bomp{font-weight:600;color:var(--navy);white-space:nowrap;margin-left:8px;flex-shrink:0}
+.totcard{background:var(--navy);border-radius:var(--r);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.totlbl{font-size:13px;color:rgba(255,255,255,.65)}.totsub{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
+.totval{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--sun3);text-align:right}
+.share-btn{width:100%;padding:12px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:1rem;transition:all .15s}
+.share-btn:hover{background:#166534;transform:translateY(-1px)}
+.fuel-compare{background:linear-gradient(135deg,#160505,#220B0B);border:1.5px solid rgba(220,38,38,.2);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.fct{font-size:12px;font-weight:600;color:#FCA5A5;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.fcr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.fcr:last-child{border-bottom:none}
+.fcl{color:rgba(255,255,255,.5)}.fcv{font-weight:600;color:#fff}
+.fcv.g{color:#86EFAC}.fcv.r{color:#FCA5A5}.fcv.big{font-family:'Fraunces',serif;font-size:18px}
+.pb-bar{background:var(--bg);border-radius:var(--r);padding:14px;margin-top:10px;border:1px solid var(--border)}
+.pb-title{font-size:12px;font-weight:600;color:var(--slate);margin-bottom:10px}
+.pb-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.pb-fill{height:100%;background:linear-gradient(90deg,var(--sun),var(--sun2));border-radius:3px;transition:width 1s ease}
+.pb-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--slate)}
+.savcard{background:var(--teal-lt);border:1px solid #99F6E4;border-radius:var(--rs);padding:11px 14px;margin-bottom:1rem}
+.savlbl{font-size:12px;color:var(--teal);font-weight:500}
+.savval{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--teal);margin-top:3px}
+.opaycard{border:2px solid var(--sun);border-radius:var(--r);padding:14px;margin-bottom:1rem;background:var(--sun-pale)}
+.ologo{font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--sun)}
+.otitle{font-size:13px;font-weight:600;color:var(--navy)}
+.osub{font-size:12px;color:var(--slate);margin-bottom:10px;line-height:1.5}
+.oamt{font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--navy)}
+.onote{font-size:11px;color:var(--slate);margin-top:3px}
+.trow{display:flex;gap:6px;margin-top:12px}
+.tr{flex:1;border-radius:var(--rs);padding:8px 4px;text-align:center}
+.tr1{background:#FEF3C7;border:1px solid #FDE68A}.tr2{background:var(--green-lt);border:1px solid #BBF7D0}.tr3{background:#DBEAFE;border:1px solid #BFDBFE}
+.trp{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--navy)}
+.trl{font-size:10px;color:var(--slate);margin-top:2px;line-height:1.3}
+.oq-box{background:var(--white);border:1px solid var(--border);border-radius:var(--rs);padding:12px;margin-top:10px}
+.oq-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px}
+.oq-opts{display:flex;flex-direction:column;gap:6px}
+.oq-opt{padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--rs);cursor:pointer;font-size:13px;color:var(--navy);transition:all .15s}
+.oq-opt:hover{border-color:var(--sun);background:var(--sun-pale)}
+.oq-opt.sel{border-color:var(--sun);background:var(--sun-pale);font-weight:500}
+.oq-result{background:var(--green-lt);border:1px solid #86EFAC;border-radius:var(--rs);padding:10px 12px;margin-top:8px;font-size:13px;color:var(--green);line-height:1.5;display:none}
+.oq-result.show{display:block}
+
+/* ══ PACKAGE (Replaces Vendors) ═════════════════════════════════════════ */
+.vintro{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:1rem;font-size:13px;color:var(--slate);line-height:1.5}
+.comp-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);margin-bottom:1rem;background:var(--white)}
+.comp-table{width:100%;border-collapse:collapse;font-size:12px;min-width:300px}
+.comp-table th{background:var(--navy);color:#fff;padding:10px 12px;font-size:11px;font-weight:600;text-align:left}
+.comp-table th.c{text-align:center}
+.comp-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.comp-table tr:last-child td{border-bottom:none}
+.row-lbl{font-weight:500;color:var(--slate);font-size:11px;white-space:nowrap}
+.spec-c{font-size:12px;color:var(--navy);line-height:1.4}
+.price-c{text-align:right;font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--sun)}
+.tot-row td{background:var(--navy)!important;color:#fff!important;font-weight:700;padding:11px 12px}
+.tot-row .price-c{color:var(--sun3)!important;font-size:17px}
+.vfoot{padding:10px 14px;background:var(--bg);border-top:1px solid var(--border);font-size:11px;color:var(--teal);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<button class="vbtn" id="vbtn" style="display:none" onclick="toggleVA()" title="Talk to Sunia">
+  <i class="ti ti-microphone" id="vi"></i>
+</button>
+
+<div class="va-panel" id="vapanel">
+  <div class="va-header">
+    <span class="va-title">🎙️ Sunia (SolarIQ AI)</span>
+    <button class="va-close" onclick="closeVA()">×</button>
+  </div>
+  <div class="va-status"><div class="va-dot" id="vadot"></div><span class="va-status-text" id="vastatus">Tap the mic to speak</span></div>
+  <div class="va-transcript" id="vatx">—</div>
+  <div class="va-response" id="vares"></div>
+  <button class="va-mic-btn" id="vamic" onclick="startListening()">
+    <i class="ti ti-microphone"></i> Tap to speak
+  </button>
+  <div class="va-hint">Try: "Add 2 fans and a fridge" · "My budget is ₦500,000" · "Remove the AC"</div>
+</div>
+
+<div class="screen active" id="s0">
+  <div class="orbs"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+  <div class="slines"><div class="sline" style="--d:7s;--t:20%"></div><div class="sline" style="--d:11s;--t:55%;animation-delay:-4s"></div><div class="sline" style="--d:9s;--t:80%;animation-delay:-2s"></div></div>
+  <div class="scroll">
+    <div class="land-top"><div class="land-logo"><span>Solar</span>IQ</div><div class="land-beta">Beta v1</div></div>
+    <div class="sun-wrap">
+      <div class="sring" style="--d:3s;--dl:0s"></div><div class="sring" style="--d:3s;--dl:1s"></div><div class="sring" style="--d:3s;--dl:2s"></div>
+      <div id="rays" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+      <div class="sun-core"><i class="ti ti-solar-panel"></i></div>
+    </div>
+    <div class="hero">
+      <div class="hero-badge"><i class="ti ti-bolt"></i> Nigeria's smart solar platform</div>
+      <div class="hero-title">Know exactly<br>what solar<br><span class="gold">costs you.</span></div>
+      <div class="hero-sub">Enter your appliances. Set your budget. Get a complete, itemised solar plan with real vendor prices — in 3 minutes.</div>
+    </div>
+    <div class="stat-band">
+      <div class="lstat"><div class="lsval" id="cnt">0</div><div class="lslbl">Nigerians without stable grid</div></div>
+      <div class="lstat"><div class="lsval">₦1.5M</div><div class="lslbl">Annual generator cost</div></div>
+      <div class="lstat"><div class="lsval">100%</div><div class="lslbl">Free for all users</div></div>
+    </div>
+    <div class="feat-wrap">
+      <div class="feat-lbl">Why SolarIQ</div>
+      <div class="feat-grid">
+        <div class="fcard"><div class="fcard-icon fi-a"><i class="ti ti-camera"></i></div><div class="fcard-name">Snap any appliance</div><div class="fcard-desc">Camera reads wattage from label automatically.</div></div>
+        <div class="fcard"><div class="fcard-icon fi-b"><i class="ti ti-receipt"></i></div><div class="fcard-name">Zero hidden costs</div><div class="fcard-desc">Every cable, bolt, and safety device itemised.</div></div>
+        <div class="fcard"><div class="fcard-icon fi-c"><i class="ti ti-shield-check"></i></div><div class="fcard-name">Overload protection</div><div class="fcard-desc">We tell you exactly what your system can safely handle — before and after install.</div></div>
+        <div class="fcard"><div class="fcard-icon fi-d"><i class="ti ti-credit-card"></i></div><div class="fcard-name">OPay instalments</div><div class="fcard-desc">Pay monthly. No paperwork. OPay qualifies you.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="acts" style="background:transparent;border:none;padding:1.5rem 1.25rem 2rem">
+    <button class="cta-main" onclick="goTo(1)"><i class="ti ti-solar-panel"></i> Get my free solar plan</button>
+    <div class="cta-note">Takes 3 minutes · No sign-up · <b>Always free</b></div>
+  </div>
+</div>
+
+<div class="screen" id="s1">
+  <div class="topnav"><div class="logo"><span>Solar</span>IQ</div><span style="font-size:12px;color:var(--slate)">Step 1 of 4</span></div>
+  <div class="prog"><div class="pf" style="width:25%"></div></div>
+  <div class="scroll">
+    <div class="stitle">Who is this for?</div>
+    <div class="ssub">We'll show you the right appliances and explain everything in plain language.</div>
+    <div id="s1err"></div>
+    <div class="pgrid">
+      <div class="pcard" onclick="pick('biz')" id="p-biz"><div class="picon"><i class="ti ti-building-store"></i></div><div class="ptitle">My business</div><div class="psub">Shop, salon, kiosk, office, restaurant</div></div>
+      <div class="pcard" onclick="pick('home')" id="p-home"><div class="picon"><i class="ti ti-building"></i></div><div class="ptitle">My home</div><div class="psub">Full flat or house</div></div>
+      <div class="pcard" onclick="pick('basic')" id="p-basic"><div class="picon"><i class="ti ti-home"></i></div><div class="ptitle">Basic home</div><div class="psub">1–2 rooms, starter setup</div></div>
+      <div class="pcard" onclick="pick('remote')" id="p-remote"><div class="picon"><i class="ti ti-laptop"></i></div><div class="ptitle">Remote worker</div><div class="psub">I work from home, need stable power</div></div>
+    </div>
+  </div>
+  <div class="acts"><div class="btn-row"><button class="btn-s" onclick="goTo(0)"><i class="ti ti-arrow-left"></i></button><button class="btn-p" onclick="next1()">Continue <i class="ti ti-arrow-right"></i></button></div></div>
+</div>
+
+<div class="screen" id="s2">
+  <div class="topnav"><div class="logo"><span>Solar</span>IQ</div><span style="font-size:12px;color:var(--slate)">Step 2 of 4</span></div>
+  <div class="prog"><div class="pf" style="width:50%"></div></div>
+  <div class="scroll">
+    <div class="stitle">What needs power?</div>
+    <div class="ssub">Start empty — add only what you actually use. You can snap a photo or just tap to add.</div>
+    <div id="s2err"></div>
+    <div class="snap-bar">
+      <div class="snap-icon-btn" onclick="trigSnap()"><i class="ti ti-camera-plus"></i></div>
+      <div class="snap-text"><div class="snap-t">📷 Snap an appliance label</div><div class="snap-s">AI reads the wattage automatically</div></div>
+      <button class="snap-cta" onclick="trigSnap()">Snap</button>
+    </div>
+    <input type="file" id="snap-inp" accept="image/*" capture="environment" onchange="handleSnap(this)">
+    <div class="snap-res" id="snap-res"><div class="snap-rt" id="snap-rt"></div><div class="snap-rs" id="snap-rs"></div></div>
+    <div class="cat-tabs" id="cattabs"></div>
+    <div class="app-list" id="applist"></div>
+    <button class="custom-bar" onclick="toggleCF()"><i class="ti ti-plus"></i> Add custom appliance (e.g. grinding machine, blender)</button>
+    <div class="cform" id="cform">
+      <div class="cflbl">Appliance name</div>
+      <input class="cfinp" id="cn" placeholder="e.g. Blender, Industrial fan">
+      <div class="cfgrid">
+        <div><div class="cflbl">Wattage (W)</div><input class="cfinp" id="cw" type="number" placeholder="e.g. 1000" style="margin-bottom:0"><div style="font-size:10px;color:var(--slate);margin-top:3px">Check sticker at back</div></div>
+        <div><div class="cflbl">Quantity</div><input class="cfinp" id="cq" type="number" placeholder="1" style="margin-bottom:0"></div>
+        <div><div class="cflbl">Hours/day</div><input class="cfinp" id="ch" type="number" placeholder="4" style="margin-bottom:0"></div>
+      </div>
+      <button class="btn-p" onclick="addCustom()" style="font-size:13px;padding:10px;margin-top:8px">Add <i class="ti ti-check"></i></button>
+    </div>
+    <div class="sel-panel">
+      <div class="sel-head"><span class="sel-title">Your appliances</span><span class="sel-badge" id="sel-ct">0 items</span></div>
+      <div class="sel-empty" id="sel-empty">Tap any appliance above to add it.<br><span style="font-size:12px">You start empty — add only what you actually use.</span></div>
+      <div id="sel-list"></div>
+    </div>
+  </div>
+  <div class="acts"><div class="btn-row"><button class="btn-s" onclick="goTo(1)"><i class="ti ti-arrow-left"></i></button><button class="btn-p" onclick="next2()">Fuel cost <i class="ti ti-arrow-right"></i></button></div></div>
+</div>
+
+<div class="screen" id="s3">
+  <div class="topnav"><div class="logo"><span>Solar</span>IQ</div><span style="font-size:12px;color:var(--slate)">Step 3 of 4</span></div>
+  <div class="prog"><div class="pf" style="width:75%"></div></div>
+  <div class="scroll">
+    <div class="stitle">Your current fuel cost</div>
+    <div class="ssub">We use your actual number — not a general estimate — so your savings comparison is real.</div>
+    <div class="fuel-card">
+      <div class="fq">How much do you spend on fuel?</div>
+      <div class="famt" id="fdisplay">₦10,000</div>
+      <input class="fsl" type="range" id="fuel-sl" min="1000" max="120000" step="1000" value="10000" oninput="upFuel(this.value)">
+      <div class="fticks"><span>₦1k</span><span>₦30k</span><span>₦60k</span><span>₦120k</span></div>
+      <div class="fperiods">
+        <button class="fpbtn on" onclick="setFP('week',this)">Per week</button>
+        <button class="fpbtn" onclick="setFP('day',this)">Per day</button>
+        <button class="fpbtn" onclick="setFP('month',this)">Per month</button>
+      </div>
+      <div class="fannual">Your estimated yearly fuel cost:<strong id="fannual">₦520,000/year</strong></div>
+    </div>
+  </div>
+  <div class="acts"><div class="btn-row"><button class="btn-s" onclick="goTo(2)"><i class="ti ti-arrow-left"></i></button><button class="btn-p" onclick="goTo(4)">Set budget <i class="ti ti-arrow-right"></i></button></div></div>
+</div>
+
+<div class="screen" id="s4">
+  <div class="topnav"><div class="logo"><span>Solar</span>IQ</div><span style="font-size:12px;color:var(--slate)">Step 4 of 4</span></div>
+  <div class="prog"><div class="pf" style="width:100%"></div></div>
+  <div class="scroll">
+    <div class="stitle">Your Budget & Location</div>
+    <div class="ssub">Set your maximum budget. SolarIQ will automatically select the best modern inverter and battery combination for your needs.</div>
+    <div class="bcard">
+      <div class="blbl">Your available budget</div>
+      <div class="bamount" id="bdisplay">₦500,000</div>
+      <input class="bsl" type="range" id="bsl" min="50000" max="3000000" step="50000" value="500000" oninput="upBudget(this.value)">
+      <div class="bticks"><span>₦50k</span><span>₦750k</span><span>₦1.5M</span><span>₦3M</span></div>
+      <div class="bhint"><i class="ti ti-info-circle"></i><span id="bhint">Starter — fan, lights, phone, TV, small fridge.</span></div>
+      <div class="bprev">
+        <div class="bpi" id="bp1"><div class="bptier">Basic</div><div class="bprange">₦235k–₦465k</div></div>
+        <div class="bpi" id="bp2"><div class="bptier">Starter</div><div class="bprange">₦465k–₦950k</div></div>
+        <div class="bpi" id="bp3"><div class="bptier">Mid-range</div><div class="bprange">₦950k–₦1.6M</div></div>
+        <div class="bpi" id="bp4"><div class="bptier">Full Power</div><div class="bprange">₦1.6M+</div></div>
+      </div>
+    </div>
+    
+    <div class="slbl"><i class="ti ti-map-pin"></i> Your city</div>
+    <select class="styled" id="city">
+      <option value="4.5">Lagos</option>
+      <option value="4.8">Ibadan</option>
+      <option value="4.7">Abeokuta</option>
+      <option value="4.6">Akure</option>
+      <option value="4.7">Ado-Ekiti</option>
+    </select>
+
+    <div style="background:var(--sun-pale); border:1px solid rgba(224,123,0,.3); border-radius:var(--rs); padding:12px 14px; margin-top:20px; font-size:12px; color:var(--navy); line-height:1.6; display:flex; gap:10px; align-items:flex-start;">
+      <i class="ti ti-cpu" style="font-size:18px; color:var(--sun); margin-top:2px;"></i>
+      <div><strong>Smart Hardware Selection</strong><br>You don't need to worry about technical details. SolarIQ automatically matches you with a modern Hybrid Inverter (with built-in MPPT) and selects Lithium or Tubular batteries depending on your budget size.</div>
+    </div>
+
+  </div>
+  <div class="acts"><div class="btn-row"><button class="btn-s" onclick="goTo(3)"><i class="ti ti-arrow-left"></i></button><button class="btn-p" onclick="calc()">See my plan <i class="ti ti-solar-panel"></i></button></div></div>
+</div>
+
+<div class="screen" id="s5">
+  <div class="topnav"><div class="logo"><span>Solar</span>IQ</div><span style="font-size:12px;color:var(--slate)">Your plan</span></div>
+  <div class="scroll" style="padding-top:0;">
+    <div style="padding-top:1.25rem;">
+      <div id="tbadge"></div>
+      <div class="stitle">Your solar plan</div>
+      <div class="ssub" id="rsub"></div>
+      <div id="bmatch"></div>
+      <div class="res-tabs">
+        <button class="rtab on" onclick="switchTab('plan',this)">📋 My Plan</button>
+        <button class="rtab" onclick="switchTab('safety',this)">⚠️ Safety</button>
+        <button class="rtab" onclick="switchTab('savings',this)">📊 Savings</button>
+        <button class="rtab" onclick="switchTab('pay',this)">💳 Payment</button>
+      </div>
+    </div>
+    
+    <div class="tab-pane on" id="tab-plan">
+      <div class="stat4">
+        <div class="scard"><div class="slb">Daily power need</div><div class="sv sun" id="rwh">—</div></div>
+        <div class="scard"><div class="slb">Panel size</div><div class="sv sun" id="rpanel">—</div></div>
+        <div class="scard"><div class="slb">Battery bank</div><div class="sv tl" id="rbat">—</div></div>
+        <div class="scard"><div class="slb">Inverter size</div><div class="sv tl" id="rinv">—</div></div>
+      </div>
+      <div class="hw-sum" id="hwsum"></div>
+      <div id="bom"></div>
+      <div class="totcard"><div><div class="totlbl">Certified Package Cost</div><div class="totsub">Includes hardware, install, and guarantee</div></div><div class="totval" id="rtot">—</div></div>
+      <button class="share-btn" onclick="shareWA()"><i class="ti ti-brand-whatsapp"></i> Share plan on WhatsApp</button>
+    </div>
+    <div class="tab-pane" id="tab-safety">
+      <div id="safety-out"></div>
+    </div>
+    <div class="tab-pane" id="tab-savings">
+      <div id="fcwrap"></div>
+      <div class="pb-bar">
+        <div class="pb-title">How long until solar pays for itself</div>
+        <div class="pb-track"><div class="pb-fill" id="pbfill" style="width:0%"></div></div>
+        <div class="pb-labels"><span>Now</span><span id="pblabel">—</span><span>10 years</span></div>
+      </div>
+      <div class="savcard"><div class="savlbl"><i class="ti ti-trending-up"></i> 5-year savings vs fuel</div><div class="savval" id="rsav">—</div></div>
+    </div>
+    <div class="tab-pane" id="tab-pay">
+      <div class="opaycard">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div class="ologo">OPay</div><div class="otitle">Pay in instalments</div></div>
+        <div class="osub">OPay already knows your creditworthiness from your transaction history — no paperwork needed. SolarIQ qualifies the purchase.</div>
+        <div class="oamt" id="rmonthly">—</div>
+        <div class="onote">per month over 12 months · Subject to OPay credit check</div>
+        <div class="trow">
+          <div class="tr tr1"><div class="trp">40%</div><div class="trl">Paid on delivery</div></div>
+          <div class="tr tr2"><div class="trp">35%</div><div class="trl">Paid at month 3</div></div>
+          <div class="tr tr3"><div class="trp">25%</div><div class="trl">Paid at month 6</div></div>
+        </div>
+        <div class="oq-box">
+          <div class="oq-title">Do you already have an OPay account?</div>
+          <div class="oq-opts">
+            <div class="oq-opt" onclick="oqPick('yes',this)">✅ Yes — I use OPay regularly</div>
+            <div class="oq-opt" onclick="oqPick('new',this)">🆕 No — I want to open one</div>
+            <div class="oq-opt" onclick="oqPick('skip',this)">💰 I'll pay upfront instead</div>
+          </div>
+          <div class="oq-result" id="oqres"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="acts"><div class="btn-row"><button class="btn-s" onclick="goTo(4)"><i class="ti ti-arrow-left"></i> Adjust</button><button class="btn-p" onclick="goTo(6)">View Certified Package <i class="ti ti-arrow-right"></i></button></div></div>
+</div>
+
+<div class="screen" id="s6">
+  <div class="topnav"><div class="logo"><span>Solar</span>IQ</div><span style="font-size:12px;color:var(--slate)">Your Package</span></div>
+  <div class="prog"><div class="pf" style="width:100%"></div></div>
+  <div class="scroll">
+    <div class="stitle">SolarIQ Certified Package</div>
+    <div class="ssub">One complete, guaranteed bundle. We automatically select the best market prices for your hardware and manage the installation so you don't have to.</div>
+    <div class="vintro"><i class="ti ti-shield-check" style="color:var(--teal)"></i> Includes 12-month SolarIQ Guarantee. OPay holds your payment until the system passes our 6-month health check.</div>
+    <div id="vout"></div>
+  </div>
+  <div class="acts"><div class="btn-row"><button class="btn-s" onclick="goTo(5)"><i class="ti ti-arrow-left"></i></button><button class="btn-p" onclick="alert('Proceeding to OPay Checkout / Installer Booking...')">Checkout with OPay <i class="ti ti-credit-card"></i></button></div></div>
+</div>
+
+</div>
+
+<script>
+// ══ APPLIANCE DATA ════════════════════════════════════════════════════════
+const CATS={
+  biz:['Business equipment','Cooling & lighting','Security & tech'],
+  home:['Cooling & lighting','Kitchen & appliances','Entertainment & work'],
+  basic:['Cooling & lighting','Entertainment & work'],
+  remote:['Work & connectivity','Cooling & lighting','Kitchen basics'],
+};
+const APPS=[
+  {id:'clipper',name:'Hair clippers',icon:'✂️',w:40,dh:6,cat:'Business equipment'},
+  {id:'dryer',name:'Hair dryer (salon)',icon:'💨',w:1200,dh:3,cat:'Business equipment'},
+  {id:'pos',name:'POS terminal',icon:'💳',w:15,dh:10,cat:'Business equipment'},
+  {id:'sewing',name:'Sewing machine',icon:'🧵',w:100,dh:8,cat:'Business equipment'},
+  {id:'grinder',name:'Grinding machine',icon:'⚙️',w:1500,dh:2,cat:'Business equipment'},
+  {id:'printer',name:'Printer / scanner',icon:'🖨️',w:50,dh:3,cat:'Business equipment'},
+  {id:'fan',name:'Ceiling / standing fan',icon:'🌬️',w:60,dh:8,cat:'Cooling & lighting'},
+  {id:'ac',name:'Air conditioner (1HP)',icon:'❄️',w:750,dh:6,cat:'Cooling & lighting',highLoad:true},
+  {id:'b4',name:'LED bulbs (×4)',icon:'💡',w:40,dh:6,cat:'Cooling & lighting'},
+  {id:'b8',name:'LED bulbs (×8)',icon:'💡',w:80,dh:6,cat:'Cooling & lighting'},
+  {id:'fridge',name:'Fridge (100L)',icon:'🍱',w:100,dh:24,cat:'Kitchen & appliances'},
+  {id:'freezer',name:'Chest freezer (200L)',icon:'🧊',w:200,dh:24,cat:'Kitchen & appliances'},
+  {id:'microwave',name:'Microwave oven',icon:'📡',w:1100,dh:0.5,cat:'Kitchen & appliances',highLoad:true},
+  {id:'blender',name:'Blender / mixer',icon:'🌀',w:400,dh:0.5,cat:'Kitchen & appliances'},
+  {id:'iron',name:'Standing iron',icon:'👔',w:1000,dh:0.5,cat:'Kitchen & appliances',highLoad:true},
+  {id:'washing',name:'Washing machine',icon:'🫧',w:500,dh:1,cat:'Kitchen & appliances'},
+  {id:'kettle',name:'Electric kettle',icon:'☕',w:1500,dh:0.3,cat:'Kitchen & appliances',highLoad:true},
+  {id:'toaster',name:'Toasting machine',icon:'🍞',w:800,dh:0.3,cat:'Kitchen & appliances',highLoad:true},
+  {id:'tv24',name:'LED TV 24"',icon:'📺',w:40,dh:4,cat:'Entertainment & work'},
+  {id:'tv43',name:'LED TV 43"',icon:'📺',w:80,dh:5,cat:'Entertainment & work'},
+  {id:'decoder',name:'DSTV / Gotv decoder',icon:'📡',w:25,dh:5,cat:'Entertainment & work'},
+  {id:'cctv',name:'CCTV cameras (×2)',icon:'📹',w:30,dh:24,cat:'Security & tech'},
+  {id:'alarm',name:'Security alarm system',icon:'🚨',w:10,dh:24,cat:'Security & tech'},
+  {id:'laptop',name:'Laptop',icon:'💻',w:65,dh:7,cat:'Work & connectivity'},
+  {id:'router',name:'WiFi router',icon:'📶',w:15,dh:18,cat:'Work & connectivity'},
+  {id:'monitor',name:'External monitor',icon:'🖥️',w:40,dh:7,cat:'Work & connectivity'},
+  {id:'phone',name:'Phone chargers (×2)',icon:'📱',w:20,dh:3,cat:'Work & connectivity'},
+  {id:'fridge-sm',name:'Small fridge (50L)',icon:'🍱',w:60,dh:24,cat:'Kitchen basics'},
+];
+
+const HIGH_LOAD_APPS=['ac','microwave','iron','kettle','toaster','grinder','dryer'];
+
+// ══ STATE ══════════════════════════════════════════════════════════════════
+let profile='home',selApps={},appHours={},appQty={},customApps=[];
+let budget=500000;
+let fuelWeekly=10000,fuelPeriod='week',lastCalc={},activeCat='';
+
+// ══ LANDING INIT ═══════════════════════════════════════════════════════════
+(()=>{
+  const sc=document.createElement('div');
+  sc.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden';
+  const sty=document.createElement('style');
+  sty.textContent='@keyframes tw{0%,100%{opacity:.05}50%{opacity:.55}}';
+  document.head.appendChild(sty);
+  for(let i=0;i<60;i++){
+    const s=document.createElement('div');const sz=Math.random()*2+.5;
+    s.style.cssText=`position:absolute;border-radius:50%;background:rgba(255,220,150,.6);width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation:tw ${2+Math.random()*4}s ease-in-out infinite ${Math.random()*4}s`;
+    sc.appendChild(s);
+  }
+  document.getElementById('s0').appendChild(sc);
+  const rw=document.getElementById('rays');
+  for(let i=0;i<8;i++){
+    const r=document.createElement('div');r.className='ray';
+    r.style.cssText=`position:absolute;width:2px;border-radius:2px;background:linear-gradient(to top,rgba(252,211,77,.7),transparent);transform-origin:bottom center;top:50%;left:50%;transform:rotate(${i*45}deg) translateY(-55px);height:20px;animation:rf 3s ease-in-out infinite ${i*.4}s`;
+    rw.appendChild(r);
+  }
+  const rsty=document.createElement('style');rsty.textContent='@keyframes rf{0%,100%{opacity:.3;height:18px}50%{opacity:.9;height:30px}}';document.head.appendChild(rsty);
+  let n=0;const t=setInterval(()=>{n+=2;document.getElementById('cnt').textContent=n+'M+';if(n>=85){document.getElementById('cnt').textContent='85M+';clearInterval(t);}},35);
+})();
+
+// ══ VOICE ASSISTANT (SUNIA) ══════════════════════════════════════════════
+let vaOpen=false,synth=window.speechSynthesis,SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition,recog=null,vaListening=false,vaSpeaking=false;
+
+const VA_CONTEXT_MSGS={
+  1:"Welcome to SolarIQ! I am Sunia, your AI assistant. Please select your profile—whether it's for your business, home, or remote work—so I can personalize your experience.",
+  2:"Great. Now, let's add the appliances you want to power. You can tap them from the list, use your camera to scan a label, or just tell me, for example, 'add a fan and a TV'.",
+  3:"To calculate your true savings, please tell me how much you currently spend on fuel. Adjust the slider to your average weekly or monthly cost.",
+  4:"Almost done! Set your maximum budget. I will automatically recommend the best inverter and battery technologies that fit your budget and appliance load.",
+  5:"Here is your customized solar plan. I've selected the safest and most efficient hardware for your needs. Check the tabs to review your safety limits and payment options.",
+  6:"This is your SolarIQ Certified Package. It gives you one guaranteed, standardized price sourced from top brands in Nigeria.",
+};
+
+const VOICE_KEYWORDS={
+  'fan':['fan','fans'],'fridge':['fridge','refrigerator','refridgerator','refrigerators'],
+  'ac':['air conditioner','ac','air con','aircon'],'b4':['bulb','bulbs','light','lights','led'],
+  'tv24':['tv','television','small tv'],'tv43':['big tv','large tv','43 tv'],
+  'laptop':['laptop','computer'],'router':['router','wifi','internet'],
+  'phone':['phone','charger','chargers'],'microwave':['microwave'],
+  'iron':['iron','pressing iron'],'washing':['washing machine','washer'],
+  'freezer':['freezer','deep freezer','chest freezer'],'clipper':['clipper','clippers'],
+  'dryer':['hair dryer','dryer'],'pos':['pos','point of sale'],
+  'grinder':['grinder','grinding machine'],'cctv':['cctv','camera','cameras'],
+};
+
+function setVAStatus(state,msg){
+  const dot=document.getElementById('vadot'),st=document.getElementById('vastatus');
+  dot.className='va-dot'+{listening:' red',speaking:' teal',done:' green'}[state]||'';
+  st.textContent=msg;
+}
+function toggleVA(){
+  vaOpen=!vaOpen;
+  document.getElementById('vapanel').classList.toggle('show',vaOpen);
+  if(vaOpen){
+    const n=parseInt(document.querySelector('.screen.active').id.replace('s',''));
+    const msg=VA_CONTEXT_MSGS[n]||"How can I help you?";
+    document.getElementById('vatx').textContent='';
+    speakSunia(msg);
+  }
+}
+function closeVA(){vaOpen=false;document.getElementById('vapanel').classList.remove('show');if(synth)synth.cancel();}
+
+function speakSunia(text){
+  if(!synth)return;
+  synth.cancel();
+  vaSpeaking=true;
+  document.getElementById('vbtn').classList.add('speaking');
+  document.getElementById('vi').className='ti ti-volume';
+  const res=document.getElementById('vares');res.textContent=text;res.classList.add('show');
+  setVAStatus('speaking','Speaking...');
+  
+  const u=new SpeechSynthesisUtterance(text);
+  const voices=synth.getVoices();
+  const nigerianAccent=voices.find(v=>v.lang==='en-NG')||voices.find(v=>v.lang==='en-GB')||voices.find(v=>v.lang.startsWith('en'));
+  if(nigerianAccent)u.voice=nigerianAccent;
+  u.rate=0.95;
+  u.pitch=1.05;
+  
+  u.onend=()=>{vaSpeaking=false;document.getElementById('vbtn').classList.remove('speaking');document.getElementById('vi').className='ti ti-microphone';setVAStatus('','Tap to speak');};
+  synth.speak(u);
+}
+
+function startListening(){
+  if(!SpeechRec){speakSunia("Sorry, your browser does not support voice input. Please use Google Chrome.");return;}
+  if(vaListening){stopListening();return;}
+  recog=new SpeechRec();
+  recog.continuous=false;recog.interimResults=true;recog.lang='en-NG';
+  vaListening=true;
+  document.getElementById('vamic').classList.add('recording');
+  document.getElementById('vamic').innerHTML='<i class="ti ti-microphone"></i> Listening... (tap to stop)';
+  document.getElementById('vbtn').classList.add('listening');
+  document.getElementById('vi').className='ti ti-microphone';
+  setVAStatus('listening','Listening...');
+  document.getElementById('vatx').textContent='...';
+  recog.onresult=(e)=>{
+    const tx=Array.from(e.results).map(r=>r[0].transcript).join('');
+    document.getElementById('vatx').textContent='"'+tx+'"';
+    if(e.results[e.results.length-1].isFinal){stopListening();processVoiceCmd(tx.toLowerCase());}
+  };
+  recog.onerror=()=>{stopListening();speakSunia("I didn't quite catch that. Please try again.");};
+  recog.onend=()=>{if(vaListening)stopListening();};
+  recog.start();
+}
+function stopListening(){
+  vaListening=false;
+  if(recog)recog.stop();
+  document.getElementById('vamic').classList.remove('recording');
+  document.getElementById('vamic').innerHTML='<i class="ti ti-microphone"></i> Tap to speak';
+  document.getElementById('vbtn').classList.remove('listening');
+  document.getElementById('vi').className='ti ti-microphone';
+}
+
+function processVoiceCmd(cmd){
+  const allApps=[...APPS,...customApps];
+  let added=[],removed=[],budget_match=null;
+  const budgetMatch=cmd.match(/(\d[\d,]+)\s*(k|thousand|naira|₦)?/);
+  if(budgetMatch&&(cmd.includes('budget')||cmd.includes('afford')||cmd.includes('spend')||cmd.includes('cost'))){
+    let amt=parseInt(budgetMatch[1].replace(/,/g,''));
+    if(budgetMatch[2]==='k'||budgetMatch[2]==='thousand')amt*=1000;
+    if(amt>=50000&&amt<=3000000){
+      budget=amt;
+      document.getElementById('bsl').value=amt;
+      upBudget(amt);
+      budget_match=amt;
+    }
+  }
+  const isRemove=cmd.includes('remove')||cmd.includes('delete')||cmd.includes('take out');
+  Object.entries(VOICE_KEYWORDS).forEach(([id,keywords])=>{
+    const found=keywords.some(kw=>cmd.includes(kw));
+    if(found){
+      if(isRemove&&selApps[id]){delete selApps[id];delete appHours[id];delete appQty[id];removed.push(id);}
+      else if(!isRemove&&!selApps[id]){
+        const app=APPS.find(a=>a.id===id);if(!app)return;
+        selApps[id]=true;appHours[id]=app.dh;appQty[id]=1;added.push(id);
+      }
+    }
+  });
+  const qtyMatch=cmd.match(/(\d+)\s+(fan|fridge|bulb|ac|laptop|tv|clipper|camera)/);
+  if(qtyMatch){
+    const qty=parseInt(qtyMatch[1]);const kw=qtyMatch[2];
+    const entry=Object.entries(VOICE_KEYWORDS).find(([,kws])=>kws.some(k=>k.includes(kw)));
+    if(entry&&selApps[entry[0]])appQty[entry[0]]=Math.min(20,qty);
+  }
+  let response='';
+  if(added.length){
+    const names=added.map(id=>APPS.find(a=>a.id===id)?.name||id);
+    response+=`I have added ${names.join(' and ')} to your plan. `;
+  }
+  if(removed.length){
+    const names=removed.map(id=>APPS.find(a=>a.id===id)?.name||id);
+    response+=`I have removed ${names.join(' and ')}. `;
+  }
+  if(budget_match)response+=`Your budget is now set to ₦${budget_match.toLocaleString()}. `;
+  if(!added.length&&!removed.length&&!budget_match){
+    response="I didn't understand that. You can say 'add a fan and a fridge' or 'my budget is 500,000'.";
+  } else {
+    renderSelPanel();
+    checkOverload();
+    response+="Would you like to add anything else?";
+  }
+  speakSunia(response);
+}
+
+// ══ OVERLOAD SAFETY SYSTEM ════════════════════════════════════════════════
+function checkOverload(){
+  const allApps=[...APPS,...customApps];
+  const sel=allApps.filter(a=>selApps[a.id]);
+  if(!sel.length)return;
+  const peakW=sel.reduce((s,a)=>s+(a.w*(appQty[a.id]||1)),0);
+  const dangerApps=sel.filter(a=>HIGH_LOAD_APPS.includes(a.id));
+  const errEl=document.getElementById('s2err');
+  if(dangerApps.length&&peakW>2000){
+    const dnames=dangerApps.map(a=>a.name).join(', ');
+    errEl.innerHTML=`<div class="err"><i class="ti ti-alert-triangle"></i> <div><strong>High-power items detected:</strong> ${dnames}. Your system will automatically be upsized to handle these safely.</div></div>`;
+  } else {
+    errEl.innerHTML='';
+  }
+}
+
+function buildSafetyTab(peakW,invKVA,totalWh){
+  const allApps=[...APPS,...customApps];
+  const sel=allApps.filter(a=>selApps[a.id]);
+  const invMaxW=invKVA*1000*0.8;
+  const headroomW=invMaxW-peakW;
+  const usedPct=Math.min(100,Math.round((peakW/invMaxW)*100));
+  let progClass=usedPct<70?'ob-prog-ok':usedPct<90?'ob-prog-warn':'ob-prog-over';
+  let loadStatus=usedPct<70?'ok':usedPct<90?'warn':'over';
+  let statusColor=usedPct<70?'var(--green)':usedPct<90?'var(--orange)':'var(--red)';
+  const notAdded=APPS.filter(a=>!selApps[a.id]&&HIGH_LOAD_APPS.includes(a.id));
+  const safeToAdd=notAdded.filter(a=>a.w<=headroomW);
+  const unsafeToAdd=notAdded.filter(a=>a.w>headroomW);
+  
+  let html=`
+  <div class="overload-banner">
+    <div class="ob-head"><div class="ob-icon">⚡</div><div class="ob-title">Your system load & safety limits</div></div>
+    <div class="ob-limit">
+      <div class="ob-limit-row"><span class="ob-limit-label">Your current peak load</span><span class="ob-limit-val" style="color:${statusColor}">${peakW}W</span></div>
+      <div class="ob-limit-row"><span class="ob-limit-label">Your inverter can safely handle</span><span class="ob-limit-val ok">${Math.round(invMaxW)}W continuous</span></div>
+      <div class="ob-progress"><div class="ob-progress-fill ${progClass}" style="width:${usedPct}%"></div></div>
+      <div class="ob-limit-row"><span class="ob-limit-label">Load usage</span><span class="ob-limit-val ${loadStatus}">${usedPct}% used</span></div>
+    </div>`;
+  if(headroomW>0){
+    html+=`<div class="headroom-card"><div class="hc-title">✅ You have a built-in safety buffer</div><div class="hc-val">${Math.round(headroomW)}W remaining</div><div class="hc-desc">SolarIQ sizes your inverter to be slightly larger than your exact load. This prevents overloading and gives you room to safely add small appliances later.</div></div>`;
+  }
+  html+=`</div>`;
+  if(safeToAdd.length){
+    html+=`<div class="overload-banner" style="border-color:var(--green);background:var(--green-lt)">
+      <div class="ob-head"><div class="ob-icon">✅</div><div class="ob-title" style="color:var(--green)">Safe to add later — within your safety buffer</div></div>
+      <div class="ob-desc" style="color:#166534">These appliances can be safely added to your system later without any risk. Your inverter can handle them.</div>
+      <ul class="ob-items">`;
+    safeToAdd.forEach(a=>{html+=`<li>${a.icon} <strong>${a.name}</strong> (${a.w}W) — adds ${a.w}W to your load</li>`;});
+    html+=`</ul></div>`;
+  }
+  if(unsafeToAdd.length){
+    html+=`<div class="danger-card">
+      <div class="dc-head"><div class="ob-icon">⚠️</div><div class="dc-title">DO NOT add these without resizing your system first</div></div>
+      <div class="dc-desc">If you plug in any of these appliances after installation, you will overload the system, damage the inverter, and void your SolarIQ guarantee.</div>
+      <ul class="dc-items">`;
+    unsafeToAdd.forEach(a=>{html+=`<li>❌ ${a.icon} <strong>${a.name}</strong> (${a.w}W) — exceeds your remaining ${Math.round(headroomW)}W buffer by ${a.w-Math.round(headroomW)}W</li>`;});
+    html+=`</ul></div>`;
+  }
+  document.getElementById('safety-out').innerHTML=html;
+}
+
+// ══ VALIDATION & NAVIGATION ════════════════════════════════════════════════
+function showErr(id,msg){
+  const el=document.getElementById(id);
+  el.innerHTML=msg?`<div class="err"><i class="ti ti-alert-circle"></i> ${msg}</div>`:'';
+}
+function next1(){
+  if(!document.querySelector('.pcard.sel')){showErr('s1err','Please choose a profile to continue.');return;}
+  showErr('s1err','');goTo(2);
+}
+function next2(){
+  const allApps=[...APPS,...customApps];
+  if(!allApps.some(a=>selApps[a.id])){showErr('s2err','Please add at least one appliance to your plan.');return;}
+  showErr('s2err','');goTo(3);
+}
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  document.getElementById('vbtn').style.display=n>0?'flex':'none';
+  if(synth)synth.cancel();vaSpeaking=false;
+  if(n===2)renderBuilder();
+  if(n===6)renderPackage();
+  window.scrollTo(0,0);
+}
+function switchTab(name,el){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.rtab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+name).classList.add('on');el.classList.add('on');
+}
+function oqPick(opt,el){
+  document.querySelectorAll('.oq-opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');
+  const r=document.getElementById('oqres');r.classList.add('show');
+  r.textContent={yes:'Great! Your OPay pre-approval limit will show when you tap "Checkout". No forms — OPay already knows your creditworthiness.',new:'No problem. Creating an OPay account is free and takes 2 minutes at opay.com or on the OPay app. After 3–6 months of regular transactions, you may qualify for an instalment plan.',skip:'Perfect. Your complete Package Quote is ready. Tap "View Certified Package" to see the final bundle.'}[opt];
+}
+
+// ══ PROFILE ═══════════════════════════════════════════════════════════════
+function pick(p){
+  profile=p;
+  document.querySelectorAll('.pcard').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('p-'+p).classList.add('sel');
+  showErr('s1err','');
+}
+
+// ══ SNAP ══════════════════════════════════════════════════════════════════
+function trigSnap(){document.getElementById('snap-inp').click();}
+function handleSnap(inp){
+  if(!inp.files||!inp.files[0])return;
+  const res=document.getElementById('snap-res');res.classList.add('show');
+  document.getElementById('snap-rt').textContent='📷 Reading label...';
+  document.getElementById('snap-rs').textContent='Google Vision AI scanning your photo';
+  setTimeout(()=>{
+    const demos=[{n:'Standing Fan',w:60,dh:8},{n:'Refrigerator',w:120,dh:24},{n:'Air Conditioner 1HP',w:746,dh:6},{n:'LED TV 32"',w:55,dh:5},{n:'Washing Machine',w:500,dh:1},{n:'Microwave Oven',w:1000,dh:0.5}];
+    const d=demos[Math.floor(Math.random()*demos.length)];
+    document.getElementById('snap-rt').textContent='✅ '+d.n+' detected — '+d.w+'W';
+    document.getElementById('snap-rs').textContent='Added to your plan. Adjust hours below.';
+    const id='snap_'+Date.now();
+    customApps.push({id,name:d.n,icon:'📷',w:d.w,dh:d.dh,cat:'snapped',custom:true});
+    selApps[id]=true;appHours[id]=d.dh;appQty[id]=1;
+    renderSelPanel();checkOverload();
+  },1600);
+  inp.value='';
+}
+
+// ══ BUILDER ═══════════════════════════════════════════════════════════════
+function renderBuilder(){
+  const cats=CATS[profile]||CATS.home;
+  const tabs=document.getElementById('cattabs');tabs.innerHTML='';
+  cats.forEach((c,i)=>{
+    const b=document.createElement('button');b.className='ctab'+(i===0?' on':'');
+    b.textContent=c;b.onclick=()=>{activeCat=c;document.querySelectorAll('.ctab').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderAppList();};
+    tabs.appendChild(b);
+  });
+  activeCat=cats[0];renderAppList();renderSelPanel();
+}
+function renderAppList(){
+  const el=document.getElementById('applist');el.innerHTML='';
+  APPS.filter(a=>a.cat===activeCat).forEach(a=>{
+    const added=!!selApps[a.id];
+    const row=document.createElement('div');row.className='arow'+(added?' added':'');row.id='ar-'+a.id;
+    row.innerHTML=`<div class="arow-icon">${a.icon}</div>
+    <div class="arow-info"><div class="arow-name">${a.name}${a.highLoad?'<span style="font-size:10px;color:var(--orange);font-weight:600;margin-left:5px">⚡ High power</span>':''}</div><div class="arow-w">${a.w}W${a.highLoad?' · Needs adequate system size':''}</div></div>
+    <button class="arow-add" onclick="toggleA('${a.id}',${a.w},${a.dh})">${added?'<i class="ti ti-check"></i>':'<i class="ti ti-plus"></i>'}</button>`;
+    el.appendChild(row);
+  });
+}
+function toggleA(id,w,dh){
+  if(selApps[id]){delete selApps[id];delete appHours[id];delete appQty[id];}
+  else{selApps[id]=true;appHours[id]=dh;appQty[id]=1;}
+  const row=document.getElementById('ar-'+id);
+  if(row){row.classList.toggle('added',!!selApps[id]);const btn=row.querySelector('.arow-add');if(btn)btn.innerHTML=selApps[id]?'<i class="ti ti-check"></i>':'<i class="ti ti-plus"></i>';}
+  renderSelPanel();checkOverload();showErr('s2err','');
+}
+function renderSelPanel(){
+  const allApps=[...APPS,...customApps];
+  const sel=allApps.filter(a=>selApps[a.id]);
+  document.getElementById('sel-ct').textContent=sel.length+(sel.length===1?' item':' items');
+  document.getElementById('sel-empty').style.display=sel.length?'none':'block';
+  const list=document.getElementById('sel-list');list.innerHTML='';
+  sel.forEach(a=>{
+    const h=appHours[a.id]||a.dh||1,q=appQty[a.id]||1;
+    const whTotal=Math.round(a.w*q*h);
+    const div=document.createElement('div');div.className='sel-item';
+    const presets=[1,2,4,6,8,12,24];
+    div.innerHTML=`<div class="sel-item-head">
+      <span class="sel-item-icon">${a.icon||'⚡'}</span>
+      <span class="sel-item-name">${a.name}</span>
+      <span class="sel-item-total">${whTotal} Wh/day</span>
+      <button class="remove-btn" onclick="removeA('${a.id}')">×</button>
+    </div>
+    <div class="ctrl-row">
+      <div class="ctrl-grp">
+        <div class="ctrl-lbl">How many do you have?</div>
+        <div class="stepper">
+          <button class="stbtn" onclick="adjC('${a.id}','qty',-1,${a.w})">−</button>
+          <span class="stval" id="qty-${a.id}">${q}</span>
+          <button class="stbtn" onclick="adjC('${a.id}','qty',1,${a.w})">+</button>
+        </div>
+      </div>
+      <div class="ctrl-grp">
+        <div class="ctrl-lbl">Hours used per day</div>
+        <div class="stepper">
+          <button class="stbtn" onclick="adjC('${a.id}','hrs',-0.5,${a.w})">−</button>
+          <span class="stval" id="hrs-${a.id}">${h}h</span>
+          <button class="stbtn" onclick="adjC('${a.id}','hrs',0.5,${a.w})">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="presets">${presets.map(v=>`<span class="preset${h===v?' on':''}" onclick="setPH('${a.id}',${v},${a.w},this)">${v}h</span>`).join('')}</div>
+    <div class="wh-badge" id="wb-${a.id}">${a.w}W × ${q} × ${h}h = ${whTotal} Wh/day</div>`;
+    list.appendChild(div);
+  });
+}
+function adjC(id,type,delta,w){
+  if(type==='qty'){appQty[id]=Math.max(1,Math.min(20,(appQty[id]||1)+delta));document.getElementById('qty-'+id).textContent=appQty[id];}
+  else{appHours[id]=Math.min(24,Math.max(0.5,Math.round(((appHours[id]||1)+delta)*2)/2));document.getElementById('hrs-'+id).textContent=appHours[id]+'h';document.querySelectorAll(`[onclick*="setPH('${id}'"]`).forEach(p=>p.classList.toggle('on',parseFloat(p.textContent)===appHours[id]));}
+  upWB(id,w);checkOverload();
+}
+function setPH(id,val,w,el){
+  appHours[id]=val;document.getElementById('hrs-'+id).textContent=val+'h';
+  el.closest('.presets').querySelectorAll('.preset').forEach(p=>p.classList.remove('on'));el.classList.add('on');
+  upWB(id,w);checkOverload();
+}
+function upWB(id,w){const q=appQty[id]||1,h=appHours[id]||1;const wb=document.getElementById('wb-'+id);if(wb)wb.textContent=`${w}W × ${q} × ${h}h = ${Math.round(w*q*h)} Wh/day`;}
+function removeA(id){
+  delete selApps[id];delete appHours[id];delete appQty[id];customApps=customApps.filter(a=>a.id!==id);
+  const row=document.getElementById('ar-'+id);if(row){row.classList.remove('added');const btn=row.querySelector('.arow-add');if(btn)btn.innerHTML='<i class="ti ti-plus"></i>';}
+  renderSelPanel();checkOverload();
+}
+function toggleCF(){document.getElementById('cform').classList.toggle('open');}
+function addCustom(){
+  const name=document.getElementById('cn').value.trim();
+  const w=parseInt(document.getElementById('cw').value)||0;
+  const q=parseInt(document.getElementById('cq').value)||1;
+  const h=parseFloat(document.getElementById('ch').value)||1;
+  if(!name){alert('Please enter the appliance name.');return;}
+  if(w<1){alert('Please enter the wattage — check the sticker at the back of the appliance.');return;}
+  const id='c_'+Date.now();
+  customApps.push({id,name,icon:'⚡',w,dh:h,cat:'custom',highLoad:w>=800});
+  selApps[id]=true;appHours[id]=h;appQty[id]=q;
+  document.getElementById('cn').value='';document.getElementById('cw').value='';document.getElementById('cq').value='';document.getElementById('ch').value='';
+  document.getElementById('cform').classList.remove('open');
+  renderSelPanel();checkOverload();
+}
+
+// ══ FUEL & BUDGET ════════════════════════════════════════════════════════
+function setFP(p,el){fuelPeriod=p;document.querySelectorAll('.fpbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on');upFuel(document.getElementById('fuel-sl').value);}
+function upFuel(v){
+  const val=parseInt(v);document.getElementById('fdisplay').textContent='₦'+val.toLocaleString();
+  const mult={week:52,day:365,month:12};
+  fuelWeekly=fuelPeriod==='day'?val*7:fuelPeriod==='month'?Math.round(val/4.33):val;
+  document.getElementById('fannual').textContent='₦'+(val*mult[fuelPeriod]).toLocaleString()+'/year';
+}
+upFuel(10000);
+
+const TIERS=[{id:1,min:0,max:465000,lbl:'Basic',hint:'Fan, lights, phone, small TV.'},{id:2,min:465000,max:950000,lbl:'Starter',hint:'Fan, lights, phone, TV, fridge.'},{id:3,min:950000,max:1600000,lbl:'Mid-range',hint:'Full home — fridge, TV, laptop, washing machine.'},{id:4,min:1600000,max:Infinity,lbl:'Full Power',hint:'AC, heavy business loads, complete home.'}];
+function upBudget(v){
+  budget=parseInt(v);document.getElementById('bdisplay').textContent='₦'+budget.toLocaleString();
+  const t=TIERS.find(x=>budget>=x.min&&budget<x.max)||TIERS[3];
+  document.getElementById('bhint').textContent=t.lbl+' system — '+t.hint;
+  [1,2,3,4].forEach(i=>document.getElementById('bp'+i).classList.toggle('on',i===t.id));
+}
+upBudget(500000);
+
+// ══ FORMAT ════════════════════════════════════════════════════════════════
+function fmt(n){return n>0?'₦'+Math.round(n).toLocaleString():n===0?'Included':'—';}
+function fmtc(n){return n>0?'₦'+Math.round(n).toLocaleString():n===0?'Incl.':'—';}
+
+// ══ CALCULATE ════════════════════════════════════════════════════════════
+function calc(){
+  const psh=parseFloat(document.getElementById('city').value);
+  const allApps=[...APPS,...customApps];
+  const sel=allApps.filter(a=>selApps[a.id]);
+  if(!sel.length){alert('Please add at least one appliance.');return;}
+  
+  const totalWh=sel.reduce((s,a)=>s+(a.w*(appQty[a.id]||1)*(appHours[a.id]||a.dh||1)),0);
+  const adjWh=totalWh/0.8;
+  const idealPW=Math.ceil(adjWh/psh/100)*100;
+  const idealPC=Math.max(1,Math.ceil(idealPW/400));
+  
+  // Dynamic Hardware Selection based on load and budget
+  const invType = 'hybrid';
+  const mpptType = 'inbuilt';
+  const batType = (budget >= 900000 || totalWh > 2500) ? 'lithium' : 'tubular';
+
+  const dod=batType==='lithium'?0.8:0.5;
+  const sysV=totalWh>3000?48:24;
+  const idealBC=Math.max(1,Math.ceil(adjWh/(sysV*dod*200)));
+  const peakW=sel.reduce((s,a)=>s+(a.w*(appQty[a.id]||1)),0);
+  
+  // 25% safety buffer math (peakW * 1.25)
+  const idealIKVA=Math.max(1.5,Math.ceil(peakW*1.25/500)*0.5);
+  
+  // 2026 Nigerian Market Pricing
+  const buCost={tubular:250000, lithium:650000}; 
+  const invCostFn=(kva)=>kva<=1.5?350000:kva<=3.5?580000:kva<=5?950000:1500000;
+  
+  const sfn=wh=>wh<1000?35000:wh<5000?70000:140000;
+  const afn=wh=>wh<1000?22000:wh<5000?55000:110000;
+  const mfn=wh=>wh<1000?22000:wh<5000?57000:130000;
+  const lfn=wh=>wh<1000?45000:wh<5000?90000:150000;
+  
+  const sysT=(pc,bc,ikva,wh)=>pc*100000+bc*buCost[batType]+invCostFn(ikva)+sfn(wh)+afn(wh)+mfn(wh)+lfn(wh);
+  const idealTotal=sysT(idealPC,idealBC,idealIKVA,totalWh);
+  
+  let pc=idealPC,bc=idealBC,ikva=idealIKVA,wasAdj=false,adjNote='';
+  if(idealTotal>budget){
+    wasAdj=true;
+    const tries=[{pc:Math.max(1,idealPC-1),bc:Math.max(1,idealBC-1),ikva:Math.max(1.5,idealIKVA-.5)},{pc:Math.max(1,idealPC-2),bc:Math.max(1,idealBC-1),ikva:Math.max(1.5,idealIKVA-1)},{pc:Math.max(1,idealPC-2),bc:Math.max(1,idealBC-2),ikva:Math.max(1.5,idealIKVA-1.5)},{pc:1,bc:1,ikva:1.5}];
+    for(const t of tries){if(sysT(t.pc,t.bc,t.ikva,totalWh)<=budget*1.15){pc=t.pc;bc=t.bc;ikva=t.ikva;break;}}
+    adjNote=`Full load needs ${fmt(idealTotal)}. SolarIQ has scaled the system to fit your ${fmt(budget)} budget. The OPay plan below covers the gap.`;
+  }
+  
+  const pw=pc*400;
+  const pCost=pc*100000, bCost=bc*buCost[batType], iCost=invCostFn(ikva), mCost=0; // mCost is 0 because inbuilt
+  const sb=sfn(totalWh),ab=afn(totalWh),mb=mfn(totalWh),lb=lfn(totalWh);
+  const core=pCost+bCost+iCost+mCost;
+  const tMin=core+sb+ab+mb+lb,tMax=Math.round(tMin*1.25),tMid=Math.round((tMin+tMax)/2);
+  
+  // 15% SolarIQ Sourcing Margin
+  const solarIqMargin = Math.round(tMid * 0.15);
+  const finalPrice = tMid + solarIqMargin;
+  
+  const annualFuel=fuelWeekly*52,savings5=annualFuel*5-finalPrice,monthly=Math.round(finalPrice/12);
+  const paybackYrs=annualFuel>0?Math.round(finalPrice/annualFuel*10)/10:99;
+  
+  let tier,tc;
+  if(totalWh<1000){tier='Tier 1 — Basic Certified Plan';tc='t1';}else if(totalWh<2500){tier='Tier 2 — Starter Certified Plan';tc='t2';}else if(totalWh<5000){tier='Tier 3 — Mid-range Certified Plan';tc='t3';}else{tier='Tier 4 — Full Power Certified Plan';tc='t4';}
+  
+  lastCalc={totalWh,adjWh,pw,pc,bc,ikva,batType,invType,mpptType,pCost,bCost,iCost,mCost,sb,ab,mb,lb,core,tMin,tMax,tMid,solarIqMargin,finalPrice,wasAdj,adjNote,sel,annualFuel,savings5,monthly,paybackYrs,psh,peakW,tier};
+  goTo(5);
+  
+  document.getElementById('tbadge').innerHTML=`<div class="tbadge ${tc}"><i class="ti ti-bolt"></i> ${tier}</div>`;
+  document.getElementById('rsub').textContent=`Based on ${Math.round(totalWh).toLocaleString()} Wh/day across ${sel.length} appliance${sel.length>1?'s':''}.`;
+  document.getElementById('rwh').textContent=Math.round(totalWh).toLocaleString()+' Wh/day';
+  document.getElementById('rpanel').textContent=pw+'W ('+pc+'× panels)';
+  document.getElementById('rbat').textContent=bc+'× '+(batType==='lithium'?'100Ah 24V':'200Ah 12V')+' '+batType.toUpperCase();
+  document.getElementById('rinv').textContent=ikva+'kVA Hybrid';
+  
+  document.getElementById('rtot').textContent=fmt(finalPrice);
+  document.getElementById('rmonthly').textContent=fmt(monthly)+'/month';
+  document.getElementById('bmatch').innerHTML=!wasAdj
+    ?`<div class="bmatch bmg"><div class="bmicon">✅</div><div><div class="bmtitle">System fits your ${fmt(budget)} budget</div><div class="bmdesc">~${fmt(budget-finalPrice)} headroom above minimum estimate.</div></div></div>`
+    :`<div class="bmatch bma"><div class="bmicon">⚡</div><div><div class="bmtitle">System scaled to fit your budget</div><div class="bmdesc">${adjNote}</div></div></div>`;
+  
+  document.getElementById('hwsum').innerHTML=`
+    <div class="hw-sum-title">Automatically Selected For You</div>
+    <div class="hw-sum-row"><span class="hw-sum-lbl">Inverter</span><div><div class="hw-sum-name">Hybrid Inverter</div><div class="hw-sum-why">Selected for seamless NEPA/Generator fallback</div></div></div>
+    <div class="hw-sum-row"><span class="hw-sum-lbl">Battery</span><div><div class="hw-sum-name">${batType === 'lithium' ? 'Lithium LFP' : 'Tubular Lead-Acid'}</div><div class="hw-sum-why">${batType === 'lithium' ? 'Selected for 10+ year lifespan and high efficiency' : 'Selected to keep system within your budget'}</div></div></div>
+    <div class="hw-sum-row"><span class="hw-sum-lbl">Controller</span><div><div class="hw-sum-name">Inbuilt MPPT</div><div class="hw-sum-why">Modern inverters include this for maximum panel efficiency</div></div></div>`;
+    
+  document.getElementById('bom').innerHTML=`
+  <div class="bomsec"><div class="bomh"><span class="bomhl">Core system hardware</span><span class="bomha">${fmt(core)}</span></div>
+    <div class="bomr"><div><div class="bomi">Solar panels</div><div class="boms">${pc}× 400W Monocrystalline</div></div><div class="bomp">${fmt(pCost)}</div></div>
+    <div class="bomr"><div><div class="bomi">Hybrid Inverter (Inbuilt MPPT)</div><div class="boms">${ikva}kVA</div></div><div class="bomp">${fmt(iCost)}</div></div>
+    <div class="bomr"><div><div class="bomi">Battery bank</div><div class="boms">${bc}× ${batType==='lithium'?'100Ah 24V':'200Ah 12V'} ${batType.toUpperCase()}</div></div><div class="bomp">${fmt(bCost)}</div></div>
+  </div>
+  <div class="bomsec"><div class="bomh"><span class="bomhl">Balance of System & Labour</span><span class="bomha">~${fmt(sb+ab+mb+lb)}</span></div>
+    <div class="bomr"><div><div class="bomi">Professional installation & safety gear</div><div class="boms">Breakers, SPD, cables, mounts, labour</div></div><div class="bomp">incl.</div></div>
+  </div>
+  <div class="bomsec"><div class="bomh"><span class="bomhl">SolarIQ Certified Sourcing</span><span class="bomha">${fmt(solarIqMargin)}</span></div>
+    <div class="bomr"><div><div class="bomi">12-month platform guarantee</div><div class="boms">Vendor sourcing, quality check, OPay escrow</div></div><div class="bomp">15%</div></div>
+  </div>`;
+  
+  buildSafetyTab(peakW,ikva,totalWh);
+  
+  document.getElementById('rsav').textContent=savings5>0?`Save ${fmt(savings5)} in 5 years vs ₦${annualFuel.toLocaleString()}/yr fuel cost`:`Payback in ~${paybackYrs} years`;
+  document.getElementById('fcwrap').innerHTML=`<div class="fuel-compare">
+    <div class="fct"><i class="ti ti-gas-station"></i> Your actual fuel vs solar</div>
+    <div class="fcr"><span class="fcl">Weekly fuel spend</span><span class="fcv r">${fmt(fuelWeekly)}/week</span></div>
+    <div class="fcr"><span class="fcl">Annual fuel cost</span><span class="fcv r">${fmt(annualFuel)}/yr</span></div>
+    <div class="fcr"><span class="fcl">5 years of fuel</span><span class="fcv r">${fmt(annualFuel*5)}</span></div>
+    <div class="fcr"><span class="fcl">SolarIQ Package (one-time)</span><span class="fcv">${fmt(finalPrice)}</span></div>
+    <div class="fcr" style="border-top:1px solid rgba(255,255,255,.06);padding-top:8px;margin-top:4px"><span class="fcl">5-year net position</span><span class="fcv big ${savings5>0?'g':'r'}">${savings5>0?'Save '+fmt(savings5):'Gap: '+fmt(Math.abs(savings5))}</span></div>
+  </div>`;
+  setTimeout(()=>{const pf=document.getElementById('pbfill');if(pf)pf.style.width=Math.min(100,Math.round(paybackYrs/10*100))+'%';},300);
+  document.getElementById('pblabel').textContent=paybackYrs+'yr payback';
+}
+
+// ══ WHATSAPP SHARE ════════════════════════════════════════════════════════
+function shareWA(){
+  const c=lastCalc;if(!c.finalPrice){alert('Generate your plan first.');return;}
+  const msg=`🌞 *My SolarIQ ${c.tier}*\n\n`+
+    `📊 Daily energy: ${Math.round(c.totalWh).toLocaleString()} Wh/day\n`+
+    `☀️ Panels: ${c.pw}W (${c.pc}× 400W)\n`+
+    `🔋 Battery: ${c.bc}× ${c.batType==='lithium'?'100Ah 24V':'200Ah 12V'} ${c.batType}\n`+
+    `⚡ Inverter: ${c.ikva}kVA Hybrid\n\n`+
+    `💰 *Certified Package Cost: ${fmt(c.finalPrice)}*\n`+
+    `📅 OPay monthly: ${fmt(c.monthly)}/month\n`+
+    `💸 5yr fuel savings: ${c.savings5>0?fmt(c.savings5):'Payback in ~'+c.paybackYrs+'yrs'}\n\n`+
+    `⚠️ Max safe load: ${Math.round(c.ikva*1000*0.8)}W — do not exceed!\n\n`+
+    `Generated free by SolarIQ — Nigeria's smart solar platform\n🔗 solariq.ng`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+// ══ PACKAGE RENDERING ════════════════════════════════════════════════════
+function renderPackage(){
+  const c=lastCalc;
+  if(!c.finalPrice){document.getElementById('vout').innerHTML='<div class="empty"><i class="ti ti-solar-panel"></i>Complete your plan first.</div>';return;}
+
+  const rows=[
+    {lbl:'Solar Panels',spec:`${c.pc}× 400W Tier-1 Mono`,price:c.pCost},
+    {lbl:'Hybrid Inverter',spec:`${c.ikva}kVA (Inbuilt MPPT)`,price:c.iCost},
+    {lbl:'Battery Bank',spec:`${c.bc}× ${c.batType==='lithium'?'Lithium LFP':'Tubular Lead-Acid'}`,price:c.bCost},
+    {lbl:'Safety & Balance of System',spec:'Breakers, SPD, Cables, Mounts',price:c.sb+c.ab+c.mb},
+    {lbl:'Professional Installation',spec:'Verified SolarIQ Installer',price:c.lb},
+    {lbl:'SolarIQ Guarantee & Sourcing',spec:'15% Platform Margin + 12mo SLA',price:c.solarIqMargin, isMargin:true}
+  ];
+
+  let html=`<div class="comp-wrap"><table class="comp-table"><thead><tr><th>Component Bundle</th><th class="c">Specification</th><th class="c">Cost</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    html+=`<tr ${r.isMargin?'style="background:var(--sun-pale)"':''}><td class="row-lbl">${r.lbl}</td><td class="spec-c"><strong>${r.spec}</strong></td>
+    <td class="price-c">${fmtc(r.price)}</td></tr>`;
+  });
+  html+=`</tbody><tfoot><tr class="tot-row"><td colspan="2" class="row-lbl" style="color:#fff">Total Certified Package Cost</td><td class="price-c">${fmt(c.finalPrice)}</td></tr></tfoot></table></div>`;
+
+  html+=`<div class="vfoot"><span><i class="ti ti-shield-check"></i> Standardized pricing. Best market rates applied.</span><strong>solariq.ng</strong></div>`;
+  document.getElementById('vout').innerHTML=html;
+}
+
+pick('home');
+</script>
+</body>
+</html>
